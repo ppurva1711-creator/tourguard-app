@@ -54,49 +54,85 @@ function timeAgo(iso) {
 }
 
 // ---------- hotel panel ----------
-async function findHotels(lat, lng) {
-  const list = document.getElementById("hotel-list");
-  list.innerHTML = `<p class="empty-state">Searching&hellip;</p>`;
+function setLocationStatus(message) {
+  document.getElementById("location-status").textContent = message;
+}
+
+async function findNearby(lat, lng) {
+  const hotelList = document.getElementById("hotel-list");
+  const restaurantList = document.getElementById("restaurant-list");
+  hotelList.innerHTML = `<p class="empty-state">Searching&hellip;</p>`;
+  restaurantList.innerHTML = `<p class="empty-state">Searching&hellip;</p>`;
+  setLocationStatus(`Showing places near ${lat.toFixed(4)}, ${lng.toFixed(4)}.`);
   try {
-    const res = await fetch(`${API}/hotels/nearby?lat=${lat}&lng=${lng}&limit=5`);
-    const hotels = await res.json();
-    if (!hotels.length) {
-      list.innerHTML = `<p class="empty-state">No stays found nearby.</p>`;
-      return;
-    }
-    list.innerHTML = hotels
-      .map(
-        (h) => `
+  const [hotelsRes, restaurantsRes] = await Promise.all([
+      fetch(`${API}/hotels/nearby?lat=${lat}&lng=${lng}&limit=5`),
+      fetch(`${API}/restaurants/nearby?lat=${lat}&lng=${lng}&limit=5`),
+    ]);
+    if (!hotelsRes.ok || !restaurantsRes.ok) throw new Error("nearby request failed");
+    const [hotels, restaurants] = await Promise.all([hotelsRes.json(), restaurantsRes.json()]);
+    hotelList.innerHTML = renderPlaceList(hotels, "No stays found nearby.", (h) =>
+      `${h.type} &middot; \u20b9${h.pricePerNight}/night &middot; \u2605 ${h.rating}`
+    );
+    restaurantList.innerHTML = renderPlaceList(restaurants, "No restaurants found nearby.", (r) =>
+      `${r.type} &middot; \u20b9${r.priceForTwo} for two &middot; \u2605 ${r.rating}`
+    );
+    if (hotels.length) updateOledStay(hotels[0].name);
+  } catch (e) {
+    hotelList.innerHTML = `<p class="empty-state">Could not reach backend.</p>`;
+    restaurantList.innerHTML = `<p class="empty-state">Could not reach backend.</p>`;
+    setLocationStatus("Nearby places could not be loaded. Check the backend and try again.");
+  }
+}
+
+function renderPlaceList(places, emptyMessage, details) {
+  if (!places.length) return `<p class="empty-state">${emptyMessage}</p>`;
+  return places
+    .map(
+      (place) => `
       <div class="hotel-row">
         <div>
-          <div class="hotel-name">${h.name}</div>
-          <div class="hotel-meta">${h.type} &middot; \u20b9${h.pricePerNight}/night &middot; \u2605 ${h.rating}</div>
+         <div class="hotel-name">${place.name}</div>
+          <div class="hotel-meta">${details(place)}</div>
         </div>
-        <div class="hotel-dist">${h.distanceKm} km</div>
+       <div class="hotel-dist">${place.distanceKm} km</div>
       </div>`
-      )
-      .join("");
-    // feed the top suggestion into the OLED preview's STAY line
-    updateOledStay(hotels[0].name);
-  } catch (e) {
-    list.innerHTML = `<p class="empty-state">Could not reach backend.</p>`;
-  }
+     )
+    .join("");
 }
 
 document.getElementById("locate-form").addEventListener("submit", (e) => {
   e.preventDefault();
   const lat = parseFloat(document.getElementById("in-lat").value);
   const lng = parseFloat(document.getElementById("in-lng").value);
-  findHotels(lat, lng);
+   findNearby(lat, lng);
 });
 
-document.getElementById("use-gps").addEventListener("click", () => {
-  if (!navigator.geolocation) return alert("Geolocation not supported in this browser.");
+function requestLocation() {
+  if (!navigator.geolocation) {
+    setLocationStatus("Geolocation is not supported in this browser. Enter coordinates instead.");
+    return;
+  }
+  setLocationStatus("Requesting your device location…");
   navigator.geolocation.getCurrentPosition((pos) => {
     document.getElementById("in-lat").value = pos.coords.latitude.toFixed(4);
     document.getElementById("in-lng").value = pos.coords.longitude.toFixed(4);
-    findHotels(pos.coords.latitude, pos.coords.longitude);
-  });
+    findNearby(pos.coords.latitude, pos.coords.longitude);
+  }, () => {
+    setLocationStatus("Location access was not granted. Enter coordinates instead.");
+  }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
+}
+
+document.getElementById("use-gps").addEventListener("click", requestLocation);
+
+document.getElementById("share-location").addEventListener("click", () => {
+  document.getElementById("location-dialog").classList.add("hidden");
+  requestLocation();
+});
+
+document.getElementById("enter-location").addEventListener("click", () => {
+  document.getElementById("location-dialog").classList.add("hidden");
+  document.getElementById("in-lat").focus();
 });
 
 // ---------- OLED preview panel ----------
