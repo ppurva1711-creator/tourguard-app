@@ -37,7 +37,7 @@
       <section class="panel" id="panel-crowd">
         <div class="panel-head">
           <h2>Crowd &amp; site status</h2>
-          <p>Live BLE device counts reported by fixed nodes at each site.</p>
+           <p>Live density signals from fixed Bluetooth Low Energy (BLE) nodes. Counts represent nearby devices, not a headcount.</p>
         </div>
         <div class="spot-grid" id="spot-grid">
           <!-- spot cards injected here -->
@@ -46,17 +46,25 @@
 
       <section class="panel" id="panel-hotels">
         <div class="panel-head">
-          <h2>Nearby stays</h2>
-          <p>Suggestions ranked by distance from the traveler's current position.</p>
+          <h2>Nearby stays &amp; food</h2>
+          <p>Hotels and restaurants ranked by distance from your shared location.</p>
         </div>
         <form class="locate-row" id="locate-form">
           <label>Lat <input type="number" step="0.0001" id="in-lat" value="18.5170" required /></label>
           <label>Lng <input type="number" step="0.0001" id="in-lng" value="73.8550" required /></label>
           <button type="button" id="use-gps">Use my location</button>
-          <button type="submit">Find stays</button>
+         <button type="submit">Find nearby places</button>
         </form>
-        <div class="hotel-list" id="hotel-list">
-          <p class="empty-state">Enter a position and press Find stays.</p>
+         <p class="location-status" id="location-status" aria-live="polite">Location not shared. Use your location or enter coordinates.</p>
+        <div class="nearby-columns">
+          <div>
+            <h3>Stays</h3>
+            <div class="hotel-list" id="hotel-list"><p class="empty-state">Share a location to find stays.</p></div>
+          </div>
+          <div>
+            <h3>Restaurants</h3>
+            <div class="hotel-list" id="restaurant-list"><p class="empty-state">Share a location to find restaurants.</p></div>
+          </div>
         </div>
       </section>
 
@@ -99,6 +107,19 @@
   <footer class="foot">
     TourGuard prototype &middot; JSON-file backend &middot; data resets on server restart
   </footer>
+
+   <div class="location-dialog" id="location-dialog" role="dialog" aria-modal="true" aria-labelledby="location-dialog-title">
+    <div class="location-dialog-card">
+      <span class="dialog-icon" aria-hidden="true">⌖</span>
+      <h2 id="location-dialog-title">Share your location?</h2>
+      <p>TourGuard uses your device location only to rank nearby hotels, restaurants, routes, and safety information. Your coordinates stay in this browser unless you send an SOS.</p>
+      <div class="dialog-actions">
+        <button type="button" id="share-location">Share my location</button>
+        <button type="button" id="enter-location" class="secondary-button">Enter coordinates instead</button>
+      </div>
+    </div>
+  </div>
+
 
 <script src="app.js"></script>
 </body>
