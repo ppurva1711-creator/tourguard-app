@@ -14,6 +14,7 @@ const FILES = {
   spots: path.join(DATA_DIR, "spots.json"),
   crowd: path.join(DATA_DIR, "crowd.json"),
   hotels: path.join(DATA_DIR, "hotels.json"),
+  restaurants: path.join(DATA_DIR, "restaurants.json"),
   sos: path.join(DATA_DIR, "sos_log.json"),
 };
 
@@ -117,21 +118,27 @@ app.post("/api/crowd/:spotId", async (req, res) => {
   res.json({ spotId: req.params.spotId, ...crowd[req.params.spotId] });
 });
 
-// ---------- routes: nearby hotel / homestay suggestions ----------
-app.get("/api/hotels/nearby", async (req, res) => {
-  const lat = parseFloat(req.query.lat);
-  const lng = parseFloat(req.query.lng);
-  const limit = parseInt(req.query.limit, 10) || 5;
-  if (Number.isNaN(lat) || Number.isNaN(lng)) {
-    return res.status(400).json({ error: "lat and lng query params are required" });
-  }
-  const hotels = await readJSON(FILES.hotels);
-  const withDistance = hotels
-    .map((h) => ({ ...h, distanceKm: Math.round(haversineKm(lat, lng, h.lat, h.lng) * 100) / 100 }))
-    .sort((a, b) => a.distanceKm - b.distanceKm)
-    .slice(0, limit);
-  res.json(withDistance);
-});
+// ---------- routes: nearby hotel / restaurant suggestions ----------
+function nearbyPlacesRoute(file) {
+  return async (req, res) => {
+    const lat = parseFloat(req.query.lat);
+    const lng = parseFloat(req.query.lng);
+    const requestedLimit = parseInt(req.query.limit, 10);
+    const limit = Number.isNaN(requestedLimit) ? 5 : Math.min(Math.max(requestedLimit, 1), 20);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) {
+      return res.status(400).json({ error: "lat and lng must be valid coordinates" });
+    }
+    const places = await readJSON(file);
+    const withDistance = places
+      .map((place) => ({ ...place, distanceKm: Math.round(haversineKm(lat, lng, place.lat, place.lng) * 100) / 100 }))
+      .sort((a, b) => a.distanceKm - b.distanceKm)
+      .slice(0, limit);
+    res.json(withDistance);
+  };
+}
+
+app.get("/api/hotels/nearby", nearbyPlacesRoute(FILES.hotels));
+app.get("/api/restaurants/nearby", nearbyPlacesRoute(FILES.restaurants));
 
 // ---------- routes: route / navigation ----------
 // Given the device's current position and a destination spot id, return
