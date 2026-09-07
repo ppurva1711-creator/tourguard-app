@@ -1,0 +1,7 @@
+[
+  { "id": "r1", "name": "Heritage Spice Restaurant", "lat": 18.5172, "lng": 73.8564, "priceForTwo": 700, "rating": 4.4, "type": "Maharashtrian" },
+  { "id": "r2", "name": "Traveler's Food Corner", "lat": 18.5215, "lng": 73.8588, "priceForTwo": 450, "rating": 4.0, "type": "Indian" },
+  { "id": "r3", "name": "Fort Chai & Kitchen", "lat": 18.5190, "lng": 73.8539, "priceForTwo": 380, "rating": 4.2, "type": "Cafe" },
+  { "id": "r4", "name": "Lakeview Thali House", "lat": 18.5348, "lng": 73.7885, "priceForTwo": 600, "rating": 4.5, "type": "Vegetarian" },
+  { "id": "r5", "name": "Old City Kebabs", "lat": 18.5151, "lng": 73.8569, "priceForTwo": 800, "rating": 4.3, "type": "North Indian" }
+]
