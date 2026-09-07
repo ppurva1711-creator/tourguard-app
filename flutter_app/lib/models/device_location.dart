@@ -1,19 +1,32 @@
 class DeviceLocation {
   final double latitude;
   final double longitude;
-  final int timestamp;
+  final double accuracy;
+  final DateTime timestamp;
 
   DeviceLocation({
     required this.latitude,
     required this.longitude,
+    required this.accuracy,
     required this.timestamp,
   });
 
-  factory DeviceLocation.fromMap(Map<dynamic, dynamic> map) {
+  Map<String, dynamic> toJson() {
+    return {
+      'latitude': latitude,
+      'longitude': longitude,
+      'accuracy': accuracy,
+      'timestamp': timestamp.toIso8601String(),
+    };
+  }
+
+  factory DeviceLocation.fromJson(Map<dynamic, dynamic> json) {
     return DeviceLocation(
-      latitude: (map['latitude'] ?? 0).toDouble(),
-      longitude: (map['longitude'] ?? 0).toDouble(),
-      timestamp: map['timestamp'] ?? 0,
+      latitude: (json['latitude'] ?? 0).toDouble(),
+      longitude: (json['longitude'] ?? 0).toDouble(),
+      accuracy: (json['accuracy'] ?? 0).toDouble(),
+      timestamp: DateTime.tryParse(json['timestamp'] ?? '') ??
+          DateTime.now(),
     );
   }
 }
