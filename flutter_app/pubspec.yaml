@@ -9,16 +9,31 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
   cupertino_icons: ^1.0.8
+
+  # Maps
   flutter_map: ^7.0.2
   latlong2: ^0.9.1
+
+  # Device location
   geolocator: ^13.0.2
   permission_handler: ^11.3.1
+
+  # Network
   http: ^1.2.2
+
+  # Local storage
   shared_preferences: ^2.3.2
+
+  # Firebase
+  firebase_core: ^3.15.2
+  firebase_database: ^11.3.8
+  firebase_auth: ^5.7.0
 
 flutter:
   uses-material-design: true
+
   assets:
     - assets/data/hotels.json
     - assets/data/spots.json
