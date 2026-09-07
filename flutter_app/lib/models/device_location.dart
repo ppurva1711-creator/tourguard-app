@@ -1,13 +1,19 @@
 class DeviceLocation {
   final double latitude;
   final double longitude;
-  final double? accuracy;
-  final DateTime timestamp;
+  final int timestamp;
 
-  const DeviceLocation({
+  DeviceLocation({
     required this.latitude,
     required this.longitude,
     required this.timestamp,
-    this.accuracy,
   });
+
+  factory DeviceLocation.fromMap(Map<dynamic, dynamic> map) {
+    return DeviceLocation(
+      latitude: (map['latitude'] ?? 0).toDouble(),
+      longitude: (map['longitude'] ?? 0).toDouble(),
+      timestamp: map['timestamp'] ?? 0,
+    );
+  }
 }
