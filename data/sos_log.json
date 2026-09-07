@@ -1,0 +1,18 @@
+[
+  {
+    "id": "sos_1788771409140",
+    "deviceId": "web-console-sim",
+    "lat": 18.517,
+    "lng": 73.855,
+    "timestamp": "2026-09-07T08:56:49.140Z",
+    "resolved": true
+  },
+  {
+    "id": "sos_1788771408466",
+    "deviceId": "web-console-sim",
+    "lat": 18.517,
+    "lng": 73.855,
+    "timestamp": "2026-09-07T08:56:48.466Z",
+    "resolved": false
+  }
+]

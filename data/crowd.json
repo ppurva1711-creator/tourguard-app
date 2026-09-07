@@ -1,0 +1,22 @@
+{
+  "spot_fort": {
+    "deviceCount": 3,
+    "level": "Low",
+    "lastUpdated": "2026-09-07T08:30:00.000Z"
+  },
+  "spot_temple": {
+    "deviceCount": 12,
+    "level": "Medium",
+    "lastUpdated": "2026-09-07T08:30:00.000Z"
+  },
+  "spot_lake": {
+    "deviceCount": 1,
+    "level": "Low",
+    "lastUpdated": "2026-09-07T08:30:00.000Z"
+  },
+  "spot_market": {
+    "deviceCount": 27,
+    "level": "High",
+    "lastUpdated": "2026-09-07T08:30:00.000Z"
+  }
+}

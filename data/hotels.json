@@ -1,0 +1,10 @@
+[
+  { "id": "h1", "name": "Riverside Heritage Homestay", "lat": 18.5201, "lng": 73.8570, "pricePerNight": 1400, "rating": 4.6, "type": "Homestay" },
+  { "id": "h2", "name": "Fort View Guest House", "lat": 18.5183, "lng": 73.8532, "pricePerNight": 1800, "rating": 4.3, "type": "Guest House" },
+  { "id": "h3", "name": "Parvati Hillside Lodge", "lat": 18.4980, "lng": 73.8510, "pricePerNight": 2100, "rating": 4.1, "type": "Lodge" },
+  { "id": "h4", "name": "Lakeside Bamboo Cottages", "lat": 18.5350, "lng": 73.7890, "pricePerNight": 2600, "rating": 4.7, "type": "Cottage" },
+  { "id": "h5", "name": "Old City Boutique Inn", "lat": 18.5165, "lng": 73.8548, "pricePerNight": 1950, "rating": 4.4, "type": "Boutique" },
+  { "id": "h6", "name": "Budget Traveler's Nest", "lat": 18.5140, "lng": 73.8580, "pricePerNight": 850, "rating": 3.9, "type": "Hostel" },
+  { "id": "h7", "name": "Hilltop Serenity Homestay", "lat": 18.4990, "lng": 73.8525, "pricePerNight": 1600, "rating": 4.5, "type": "Homestay" },
+  { "id": "h8", "name": "Market Street Residency", "lat": 18.5162, "lng": 73.8555, "pricePerNight": 1300, "rating": 4.0, "type": "Guest House" }
+]

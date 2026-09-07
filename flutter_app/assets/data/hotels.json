@@ -1,0 +1,7 @@
+[
+  {"id":"h1","name":"Riverside Heritage Homestay","lat":18.5201,"lng":73.8570,"pricePerNight":1400,"rating":4.6,"type":"Homestay","category":"hotel"},
+  {"id":"h2","name":"Fort View Guest House","lat":18.5183,"lng":73.8532,"pricePerNight":1800,"rating":4.3,"type":"Guest House","category":"hotel"},
+  {"id":"h3","name":"Parvati Hillside Lodge","lat":18.4980,"lng":73.8510,"pricePerNight":2100,"rating":4.1,"type":"Lodge","category":"hotel"},
+  {"id":"r1","name":"Heritage Spice Restaurant","lat":18.5172,"lng":73.8564,"pricePerNight":0,"rating":4.4,"type":"Restaurant","category":"restaurant"},
+  {"id":"r2","name":"Traveler's Food Corner","lat":18.5215,"lng":73.8588,"pricePerNight":0,"rating":4.0,"type":"Restaurant","category":"restaurant"}
+]

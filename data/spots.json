@@ -1,0 +1,30 @@
+[
+  {
+    "id": "spot_fort",
+    "name": "Shaniwar Wada Fort",
+    "lat": 18.5195,
+    "lng": 73.8553,
+    "description": "17th-century fortification and historic palace complex."
+  },
+  {
+    "id": "spot_temple",
+    "name": "Parvati Hill Temple",
+    "lat": 18.4968,
+    "lng": 73.8496,
+    "description": "Hilltop temple complex with panoramic city views."
+  },
+  {
+    "id": "spot_lake",
+    "name": "Pashan Lake Viewpoint",
+    "lat": 18.5364,
+    "lng": 73.7869,
+    "description": "Lakeside walking trail popular at sunset."
+  },
+  {
+    "id": "spot_market",
+    "name": "Tulshibaug Heritage Market",
+    "lat": 18.5158,
+    "lng": 73.8560,
+    "description": "Dense traditional market street near the old city core."
+  }
+]
