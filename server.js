@@ -164,6 +164,55 @@ app.get("/api/route", async (req, res) => {
   });
 });
 
+// ---------- routes: safety decision support ----------
+// A compact, device-friendly safety brief that combines the selected route with
+// the latest BLE crowd signal. It deliberately gives advice rather than a
+// promise of safety: BLE devices are a useful local signal, not a headcount.
+app.get("/api/safety/brief", async (req, res) => {
+  const lat = parseFloat(req.query.lat);
+  const lng = parseFloat(req.query.lng);
+  const destId = req.query.destId;
+  if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180 || !destId) {
+    return res.status(400).json({ error: "lat, lng and destId query params are required" });
+  }
+
+  const [spots, crowd] = await Promise.all([readJSON(FILES.spots), readJSON(FILES.crowd)]);
+  const destination = spots.find((spot) => spot.id === destId);
+  if (!destination) return res.status(404).json({ error: "destination spot not found" });
+
+  const signal = crowd[destId] || { deviceCount: 0, level: "Low", lastUpdated: null };
+  const distanceKm = haversineKm(lat, lng, destination.lat, destination.lng);
+  const bearing = bearingDeg(lat, lng, destination.lat, destination.lng);
+  const walkingMinutes = Math.max(1, Math.round((distanceKm / 4.5) * 60));
+  const recommendation = {
+    Low: {
+      status: "Clear signal",
+      message: "Low nearby-device density. Continue with normal precautions and keep location sharing enabled.",
+    },
+    Medium: {
+      status: "Stay aware",
+      message: "Moderate nearby-device density. Keep your group together and check in before entering busy areas.",
+    },
+    High: {
+      status: "Plan before proceeding",
+      message: "High nearby-device density. Consider waiting, choosing a less busy time, or using the SOS button if you need help.",
+    },
+  }[signal.level] || {
+    status: "Signal unavailable",
+    message: "No current crowd signal is available. Use normal precautions and check the destination before proceeding.",
+  };
+
+  res.json({
+    destination: destination.name,
+    distanceKm: Math.round(distanceKm * 100) / 100,
+    walkingMinutes,
+    bearingDeg: Math.round(bearing),
+    compass: compass(bearing),
+    crowd: signal,
+    ...recommendation,
+  });
+});
+
 // ---------- routes: SOS ----------
 app.post("/api/sos", async (req, res) => {
   const { lat, lng, deviceId } = req.body;
