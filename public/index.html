@@ -87,6 +87,28 @@
         </div>
       </section>
 
+      <section class="panel safety-panel" id="panel-safety" aria-live="polite">
+        <div class="panel-head safety-head">
+          <div>
+            <h2>Safety brief</h2>
+            <p>Route-aware guidance based on the selected destination and its latest BLE crowd signal.</p>
+          </div>
+          <span class="safety-state is-idle" id="safety-state">SELECT A SITE</span>
+        </div>
+        <div class="safety-content" id="safety-content">
+          <div class="safety-icon" aria-hidden="true">⌖</div>
+          <div>
+            <p class="safety-title">Choose a destination to receive a travel brief.</p>
+            <p class="safety-message">TourGuard will combine the route, walking estimate, and current crowd signal in one quick decision aid.</p>
+          </div>
+        </div>
+        <div class="safety-metrics" id="safety-metrics" hidden>
+          <div><span>ROUTE</span><strong id="brief-route">--</strong></div>
+          <div><span>WALK</span><strong id="brief-walk">--</strong></div>
+          <div><span>LIVE SIGNAL</span><strong id="brief-signal">--</strong></div>
+        </div>
+      </section>
+
     </section>
 
     <aside class="col-side">
