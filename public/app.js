@@ -35,14 +35,20 @@ function renderSpotGrid(spots) {
   grid.innerHTML = spots
     .map(
       (s) => `
-    <div class="spot-card level-${s.level}">
+    <button class="spot-card level-${s.level}" type="button" data-spot-id="${s.id}" aria-label="Select ${s.name} as destination">
       <span class="spot-count">${s.deviceCount} devices</span>
       <div class="spot-name">${s.name}</div>
       <div class="spot-meta">updated ${timeAgo(s.lastUpdated)}</div>
       <span class="spot-level">${s.level.toUpperCase()}</span>
-    </div>`
+    </button>`
     )
     .join("");
+  grid.querySelectorAll(".spot-card").forEach((card) => {
+    card.addEventListener("click", () => {
+      document.getElementById("oled-dest-select").value = card.dataset.spotId;
+      refreshOled();
+    });
+  });
 }
 
 function timeAgo(iso) {
@@ -169,26 +175,54 @@ async function refreshOled() {
     lines[2].textContent = "DIST: --   DIR: --";
     lines[3].textContent = "CROWD: --";
     lines[4].textContent = `STAY: ${lastOledStay}`;
+    renderSafetyBrief();
     return;
   }
 
   try {
-    const [routeRes, crowdRes] = await Promise.all([
+    const [routeRes, crowdRes, safetyRes] = await Promise.all([
       fetch(`${API}/route?lat=${lat}&lng=${lng}&destId=${destId}`),
       fetch(`${API}/crowd/${destId}`),
+      fetch(`${API}/safety/brief?lat=${lat}&lng=${lng}&destId=${destId}`),
     ]);
+    if (!routeRes.ok || !crowdRes.ok || !safetyRes.ok) throw new Error("route request failed");
     const route = await routeRes.json();
     const crowd = await crowdRes.json();
+    const brief = await safetyRes.json();
     lines[1].textContent = `DEST: ${truncate(route.destination, 20)}`;
     lines[2].textContent = `DIST: ${route.distanceKm}km  DIR: ${route.compass}`;
     lines[3].textContent = `CROWD: ${crowd.level.toUpperCase()} (${crowd.deviceCount})`;
     lines[4].textContent = `STAY: ${lastOledStay}`;
+    renderSafetyBrief(brief);
   } catch (e) {
     lines[1].textContent = "DEST: error fetching route";
+    renderSafetyBrief(null, "Safety guidance could not be loaded. Check the backend and try again.");
   }
 }
 
 document.getElementById("oled-dest-select").addEventListener("change", refreshOled);
+
+function renderSafetyBrief(brief, errorMessage = "") {
+  const state = document.getElementById("safety-state");
+  const content = document.getElementById("safety-content");
+  const metrics = document.getElementById("safety-metrics");
+  if (!brief) {
+    state.className = `safety-state is-idle${errorMessage ? " is-error" : ""}`;
+    state.textContent = errorMessage ? "UNAVAILABLE" : "SELECT A SITE";
+    content.innerHTML = `<div class="safety-icon" aria-hidden="true">${errorMessage ? "!" : "⌖"}</div><div><p class="safety-title">${errorMessage || "Choose a destination to receive a travel brief."}</p><p class="safety-message">${errorMessage ? "The wearable preview remains available once the connection is restored." : "TourGuard will combine the route, walking estimate, and current crowd signal in one quick decision aid."}</p></div>`;
+    metrics.hidden = true;
+    return;
+  }
+  const level = brief.crowd.level.toLowerCase();
+  state.className = `safety-state level-${level}`;
+  state.textContent = brief.status.toUpperCase();
+  content.innerHTML = `<div class="safety-icon level-${level}" aria-hidden="true">${level === "high" ? "!" : "✓"}</div><div><p class="safety-title">${brief.destination}</p><p class="safety-message">${brief.message}</p></div>`;
+  document.getElementById("brief-route").textContent = `${brief.distanceKm} km ${brief.compass}`;
+  document.getElementById("brief-walk").textContent = `~${brief.walkingMinutes} min`;
+  document.getElementById("brief-signal").textContent = `${brief.crowd.level} · ${brief.crowd.deviceCount}`;
+  metrics.hidden = false;
+}
+
 
 // ---------- SOS panel ----------
 async function loadSos() {
